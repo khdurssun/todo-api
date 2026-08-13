@@ -5,10 +5,11 @@ from models import Task
 
 async def add_task(
     session: AsyncSession,
+    title: str,
     description: str | None = None,
     is_completed: bool = False,
 ) -> Task:
-    new_task = Task(description=description, is_completed=is_completed)
+    new_task = Task(title=title, description=description, is_completed=is_completed)
     session.add(new_task)
     await session.commit()
     await session.refresh(new_task)
@@ -18,6 +19,7 @@ async def add_task(
 async def update_task(
     session: AsyncSession,
     task_id: int,
+    title: str,
     description: str | None = None,
     is_completed: bool | None = None,
 ) -> Task | None:
@@ -27,6 +29,9 @@ async def update_task(
 
     if not task:
         return None
+    
+    if title is not None: 
+        task.title = title 
 
     if description is not None:
         task.description = description
