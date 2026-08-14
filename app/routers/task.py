@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_async_session
-from schemas import Task, TaskCreate, TaskUpdate, TaskBase
+from app.schemas import TaskCreate, TaskUpdate, TaskBase
 from database import services
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
@@ -15,6 +15,7 @@ async def create_task(
 ):
     return await services.add_task(
         session=session,
+        title=task_in.title,
         description=task_in.description,
         is_completed=task_in.is_completed,
     )
@@ -29,6 +30,7 @@ async def patch_task(
     updated_task = await services.update_task(
         session=session,
         task_id=task_id,
+        title=task_in.title,
         description=task_in.description,
         is_completed=task_in.is_completed,
     )
