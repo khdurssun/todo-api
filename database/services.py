@@ -1,6 +1,12 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import Task
+from database.database import engine
+from database.models import Base, Task
+
+
+async def create_tables() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def add_task(
@@ -19,7 +25,7 @@ async def add_task(
 async def update_task(
     session: AsyncSession,
     task_id: int,
-    title: str,
+    title: str | None = None,
     description: str | None = None,
     is_completed: bool | None = None,
 ) -> Task | None:
@@ -29,9 +35,9 @@ async def update_task(
 
     if not task:
         return None
-    
-    if title is not None: 
-        task.title = title 
+
+    if title is not None:
+        task.title = title
 
     if description is not None:
         task.description = description
